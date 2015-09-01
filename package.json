@@ -1,0 +1,30 @@
+{
+  "name": "reclamos-moviles",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jzuleta/ReclamosMoviles.git"
+  },
+  "keywords": [
+    "reclamos",
+    "moviles",
+    "responsive",
+    "googleMaps"
+  ],
+  "author": "Jairo Zuleta Gutierrez",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jzuleta/ReclamosMoviles/issues"
+  },
+  "homepage": "https://github.com/jzuleta/ReclamosMoviles#readme",
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-autoprefixer": "^2.3.1",
+    "gulp-rename": "^1.2.2"
+  }
+}

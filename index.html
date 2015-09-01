@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+<!--[if IE 9]><html class="lt-ie10" lang="en"> <![endif]-->
+<html class="no-js" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reclamos moviles (Desarrollo)</title>
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700" type="text/css"/>
+    <link rel="stylesheet" href="vendors/foundation-5.5.2/css/normalize.css">
+    <link rel="stylesheet" href="vendors/foundation-5.5.2/css/foundation.css">
+    <link href="resources/css/spinner.css" rel="stylesheet" />
+    <link rel="stylesheet" href="resources/css/app.css">
+    <link rel="stylesheet" href="resources/css/input-style.css" />
+
+</head>
+<body>
+<div id="top-bar-content">
+    <div id="app-top-bar">
+        <div data-slidr="login" class="top-bar-state">
+            <h3>Reclamos Moviles</h3>
+        </div>
+        <div data-slidr="map-register" class="top-bar-state">
+            <span class="top-bar-icon back-icon" data-direction="login"></span>
+            <h3 id="topic-title">Reclamos activos</h3>
+        </div>
+        <div data-slidr="word" class="top-bar-state">
+            <span class="top-bar-icon item-icon"></span>
+            <h3>Ingreso reclamo</h3>
+            <span id="back-words" data-top="detail" data-state="topic-content" class="top-bar-icon cancel-icon"></span>
+        </div>
+    </div>
+</div>
+<div id="app-content" class="row">
+    <div id="app-transitions" class="transition-component">
+        <div id="login-form" data-slidr="login" class="transition-component">
+            <div id="search-address" class="float-button f-location"></div>
+            <div id="map-preview">
+                <span>Necesitas agregar tu dirección</span>
+            </div>
+            <div class="group large-12 small-12 columns">
+                <!--<div class="form-icon name-icon"></div>-->
+                <input type="text" required>
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                <label>Nombre</label>
+            </div>
+            <div class="group large-6 small-4 columns" style="padding-right: 0">
+                <!--<div class="form-icon identity-icon"></div>-->
+                <input type="text" required>
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                <label>Rut</label>
+            </div>
+            <div class="group large-6 small-8 columns">
+                <!--<div class="form-icon email-icon"></div>-->
+                <input type="text" required>
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                <label>Correo</label>
+            </div>
+            <div class="large-12 small-12 columns">
+                <a href="#" class="button action-buttons">Ingresar</a>
+            </div>
+
+        </div>
+        <div id="map-register" data-slidr="map-register" class="transition-component">
+            <div id="search-address-map"></div>
+            <div id="geolocate" class="float-button geolocate-icon"></div>
+            <div id="search-status"></div>
+        </div>
+        <div id="map-content" data-slidr="map" class="transition-component"> </div>
+        <div id="events-content" data-slidr="events" class="transition-component"> </div>
+        <div id="event-confirm" data-slidr="confirm" class="transition-component"> </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?libraries=places&sensor=false"></script>
+<script type="text/javascript" src="vendors/foundation-5.5.2/js/vendor/modernizr.js"></script>
+<script type="text/javascript" src="vendors/foundation-5.5.2/js/vendor/jquery.js"></script>
+<script type="text/javascript" src="vendors/foundation-5.5.2/js/foundation.min.js"></script>
+<script type="text/javascript" src="vendors/mustache-js/mustache.min.js"></script>
+<script type="text/javascript" src="vendors/slidr/slidr.min.js"></script>
+<script type="text/javascript" src="resources/js/screen-config.js"></script>
+<script type="text/javascript" src="resources/js/config-templates.js"></script>
+<script type="text/javascript" src="resources/js/app.js"></script>
+<script>
+    $(document).foundation();
+</script>
+</body>
+</html>
