@@ -20,6 +20,14 @@
             timeout: {
                 name: 'timeout.html',
                 content: ''
+            },
+            address_detail: {
+                name: 'address_detail.html',
+                content: ''
+            },
+            location_problem: {
+                name: 'location_problem.html',
+                content: ''
             }
         },
         initialize = {

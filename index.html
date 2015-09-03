@@ -9,20 +9,25 @@
     <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700" type="text/css"/>
     <link rel="stylesheet" href="vendors/foundation-5.5.2/css/normalize.css">
     <link rel="stylesheet" href="vendors/foundation-5.5.2/css/foundation.css">
-    <link href="resources/css/spinner.css" rel="stylesheet" />
+    <link href="resources/css/spinner.css" rel="stylesheet"/>
     <link rel="stylesheet" href="resources/css/app.css">
-    <link rel="stylesheet" href="resources/css/input-style.css" />
+    <link rel="stylesheet" href="resources/css/input-style.css"/>
 
 </head>
 <body>
 <div id="top-bar-content">
     <div id="app-top-bar">
         <div data-slidr="login" class="top-bar-state">
-            <h3>Reclamos Moviles</h3>
+            <h3>Registro de usuario</h3>
         </div>
         <div data-slidr="map-register" class="top-bar-state">
             <span class="top-bar-icon back-icon" data-direction="login"></span>
-            <h3 id="topic-title">Reclamos activos</h3>
+            <h3 id="topic-title">Buscar ubicación</h3>
+            <span class="top-bar-icon alternative search-icon" data-direction="searcher"></span>
+        </div>
+        <div data-slidr="searcher" class="top-bar-state">
+            <span class="top-bar-icon back-gray-icon" data-direction="map-register"></span>
+            <input type="text" id="search-input"/>
         </div>
         <div data-slidr="word" class="top-bar-state">
             <span class="top-bar-icon item-icon"></span>
@@ -34,9 +39,8 @@
 <div id="app-content" class="row">
     <div id="app-transitions" class="transition-component">
         <div id="login-form" data-slidr="login" class="transition-component">
-            <div id="search-address" class="float-button f-location"></div>
             <div id="map-preview">
-                <span>Necesitas agregar tu dirección</span>
+                <span>Toque para agregar su dirección</span>
             </div>
             <div class="group large-12 small-12 columns">
                 <!--<div class="form-icon name-icon"></div>-->
@@ -60,7 +64,7 @@
                 <label>Correo</label>
             </div>
             <div class="large-12 small-12 columns">
-                <a href="#" class="button action-buttons">Ingresar</a>
+                <a href="#" class="button action-buttons">INGRESAR</a>
             </div>
 
         </div>
@@ -79,13 +83,20 @@
 <script type="text/javascript" src="vendors/foundation-5.5.2/js/vendor/modernizr.js"></script>
 <script type="text/javascript" src="vendors/foundation-5.5.2/js/vendor/jquery.js"></script>
 <script type="text/javascript" src="vendors/foundation-5.5.2/js/foundation.min.js"></script>
+
 <script type="text/javascript" src="vendors/mustache-js/mustache.min.js"></script>
 <script type="text/javascript" src="vendors/slidr/slidr.min.js"></script>
 <script type="text/javascript" src="resources/js/screen-config.js"></script>
 <script type="text/javascript" src="resources/js/config-templates.js"></script>
 <script type="text/javascript" src="resources/js/app.js"></script>
 <script>
-    $(document).foundation();
+    $(document).foundation({
+        reveal: {
+            animation_speed: 150,
+            dismiss_modal_class: 'close-modal',
+            close_on_background_click: false
+        }
+    });
 </script>
 </body>
 </html>
