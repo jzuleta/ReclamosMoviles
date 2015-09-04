@@ -23,20 +23,28 @@
             geolocate: "#geolocate",
             topBarIcon: ".top-bar-icon",
             searchStatus: "#search-status",
+            userStatus: "#user-status",
             inputSearch: "#search-input",
             mapPreview: "#map-preview",
             addressConfirm: "#confirm-address",
             addressProblem: "#address-problem",
-            closeAdvices: "#close_advices"
+            closeAdvices: "#close_advices",
+            login: "#login",
+            editAddress: "#edit-address",
+            loginInputs: "#login-form input[type=text]"
         },
-        dom = {
-
-        },
+        dom = {},
         catchDom = function() {
+            dom.topBarContent = $(st.topBarContent);
+            dom.appTransition = $(st.appTransition);
             dom.topBarIcon = $(st.topBarIcon);
             dom.geolocate = $(st.geolocate);
             dom.searchStatus = $(st.searchStatus);
+            dom.userStatus = $(st.userStatus);
             dom.mapPreview = $(st.mapPreview);
+            dom.loginInputs = $(st.loginInputs);
+            dom.login = $(st.login);
+            dom.editAddress = $(st.editAddress);
         },
         navigationControl = {
             createTransitions: function() {
@@ -64,8 +72,7 @@
                 dom.searchStatus.html(template);
                 dom.searchStatus.css("margin-bottom", "0");
             },
-            cleanPanelStatus: function (timer) {
-                
+            cleanPanelStatus: function(timer) {
                 setTimeout(function() {
                     dom.searchStatus.css("margin-bottom", "-300px")
                        .empty();
@@ -76,19 +83,19 @@
                 navigationControl.createPanelStatus(
                     Mustache.render(templates.collection.address_detail.content, mapControl.processAddress(address)));
 
-
                 $(st.addressProblem).on("click", navigationControl.addressProblem);
                 $(st.addressConfirm).on("click", navigationControl.addressConfirm);
             },
-            addressProblem: function () {
+            addressProblem: function() {
                 dom.searchStatus.html(templates.collection.location_problem.content);
-                $(st.closeAdvices).on("click", function () { navigationControl.cleanPanelStatus(500) });
+                $(st.closeAdvices).on("click", function() { navigationControl.cleanPanelStatus(10); });
             },
             addressConfirm: function() {
                 dom.panels.slide("login");
                 dom.topBar.slide("login");
                 dom.mapPreview.empty();
 
+                navigationControl.cleanPanelStatus(500);
                 var mapPreview = new google.maps.Map(document.getElementById(st.mapPreview.slice(1)), {
                     center: app.currentPosition,
                     draggable: false,
@@ -102,10 +109,22 @@
                 });
 
                 var d = new google.maps.Marker({
-                    position: app.currentPosition
+                    position: app.currentPosition,
+                    map: mapPreview
                 });
+            },
+            createUserLayout: function() {
+                dom.topBarContent.height(95);
+                dom.panels.slide("map-content");
+                dom.topBar.slide("user-map");
+                dom.editAddress.toggle();
+                dom.userStatus.toggle();
 
-                d.setMap(mapPreview);
+            },
+            removeUserLayout: function() {
+                dom.topBarContent.height(57);
+                dom.editAddress.toggle();
+                dom.userStatus.toggle();
             }
         },
         mapControl = {
@@ -149,6 +168,7 @@
 
                 google.maps.event.addListener(app.userMarker, "dragend", function(event) {
                     app.currentPosition = new google.maps.LatLng(event.latLng.lat(), event.latLng.lng());
+                    app.map.panTo(app.currentPosition);
                     mapControl.getAddressFromCoordinates();
                 });
             },
@@ -178,14 +198,23 @@
                     errorTemplate = "timeout";
                     break;
                 }
+
                 navigationControl.createPanelStatus(templates.collection[errorTemplate].content);
                 navigationControl.cleanPanelStatus(3000);
             }
         },
+        localDatabase = {
+            checkExist: function() {
+                return (localStorage.getItem("rm_id") === null) ? false : true;
+            },
+            saveChanges: function(userData) {
+                localStorage.setItem("rm_user", JSON.stringify(userData));
+            }
+        },
         events = {
             addressMap: function() {
-                dom.panels.slide("map-register");
-                dom.topBar.slide("map-register");
+                dom.panels.slide("map-content");
+                dom.topBar.slide("map-content");
             },
             initializeMaps: function() {
                 app.map = new google.maps.Map(document.getElementById(st.searchAddressMap.slice(1)), app.mapOptions);
@@ -211,10 +240,21 @@
 
             navigationControl.createTransitions();
 
+
             dom.mapPreview.on("click", events.addressMap);
-            dom.topBarIcon.on("click", navigationControl.backTo);
             dom.geolocate.on("click", mapControl.positionSearch);
+            dom.topBarIcon.on("click", navigationControl.backTo);
+            dom.login.on("click", navigationControl.createUserLayout);
+            dom.editAddress.on("click", navigationControl.removeUserLayout);
+
+
+            //dom.loginInputs.on("focus", function () {
+            //    setInterval(function() {
+            //        dom.appTransition.animate({ scrollTop: 230 }, "fast");
+            //    }, 1000);
+            //});
         };
+
     catchDom();
     suscribeEvents();
 })();

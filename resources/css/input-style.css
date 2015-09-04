@@ -1,6 +1,5 @@
 ﻿.group {
     margin-bottom: 35px;
-    /*position: relative;*/
 }
 
 input {
@@ -19,33 +18,8 @@ input {
 
 input:focus {
     background: white !important;
-    border-bottom: 2px solid gray !important;
+    border-bottom: 2px solid #2196f3 !important;
 }
-
-
-label {
-    -moz-transition: 0.2s ease all;
-    -webkit-transition: 0.2s ease all;
-    bottom: 4px;
-    color: #999;
-    font-size: 16px;
-    font-weight: normal;
-    left: 16px;
-    pointer-events: none;
-    position: absolute;
-    transition: 0.2s ease all;
-}
-
-/* active state */
-
-input:focus ~ label, input:valid ~ label {
-    color: #a7a7a7;
-    font-size: 14px;
-    font-weight: 500;
-    top: -15px;
-}
-
-/* BOTTOM BARS ================================= */
 
 .bar {
     display: block;
@@ -53,16 +27,44 @@ input:focus ~ label, input:valid ~ label {
     width: 100%;
 }
 
-.bar:before, .bar:after {
-    -moz-transition: 0.2s ease all;
-    -webkit-transition: 0.2s ease all;
-    background: #1976d2 none repeat scroll 0 0;
+input:focus {
+    background: #fff!important;
+    border-bottom: 2px solid gray!important
+}
+
+label {
+    -moz-transition: .2s ease all;
+    -webkit-transition: .2s ease all;
+    bottom: 4px;
+    color: #a7a7a7;
+    font-size: 16px;
+    font-size: 14px;
+    font-weight: 400;
+    font-weight: 500;
+    left: 16px;
+    pointer-events: none;
+    position: absolute;
+    top: -15px;
+    transition: .2s ease all
+}
+
+.bar {
+    display: block;
+    position: relative;
+    width: 100%
+}
+
+.bar:after,
+.bar:before {
+    -moz-transition: .2s ease all;
+    -webkit-transition: .2s ease all;
+    background: #1976d2;
     bottom: 1px;
     content: '';
     height: 2px;
     position: absolute;
-    transition: 0.2s ease all;
-    width: 0;
+    transition: .2s ease all;
+    width: 0
 }
 
 .bar:before { left: 50%; }

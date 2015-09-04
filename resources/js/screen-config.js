@@ -8,7 +8,6 @@
             $(window).resize(reziseTransitionPanel);
         },
         reziseTransitionPanel = function(e) {
-
             dom.transitionPanel.height(dom.document.height() - 57);
         },
         initialize = function() {
