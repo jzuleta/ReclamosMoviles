@@ -1,6 +1,7 @@
 ﻿.circular {								
   height: 50px;
     width: 50px;
+    margin-top: 10px;
   -webkit-animation: rotate 2s linear infinite;
   animation: rotate 2s linear infinite;
 

@@ -1,7 +1,6 @@
 ﻿<!DOCTYPE html>
 <!--[if IE 9]><html class="lt-ie10" lang="en"> <![endif]-->
 <html class="no-js" lang="en">
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +8,7 @@
     <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700" type="text/css"/>
     <link rel="stylesheet" href="vendors/foundation-5.5.2/css/normalize.css">
     <link rel="stylesheet" href="vendors/foundation-5.5.2/css/foundation.css">
-    <link rel="stylesheet" href="resources/css/spinner.css" />
+    <link rel="stylesheet" href="resources/css/spinner.css"/>
     <link rel="stylesheet" href="resources/css/app.css">
     <link rel="stylesheet" href="resources/css/input-style.css"/>
 </head>
@@ -32,12 +31,11 @@
 
         <div data-slidr="user-map" class="top-bar-state">
             <div id="user-data-content">
-                <h3>Erasmo Escala 1817-192</h3>
-                <div style="font-size: 16px; color: white; margin-top: -6px; margin-bottom: 5px;">Región Metropolitana</div>
+                <h3></h3>
+                <div style="font-size: 16px; color: white; margin-top: -6px; margin-bottom: 5px;"></div>
                 <div style="font-size: 14px; background: rgb(25, 118, 210) none repeat scroll 0% 0%; color: white; font-weight: 500; float: left; padding: 2px 16px; border-radius: 2px;">CHILECTRA </div>
             </div>
         </div>
-
     </div>
 </div>
 <div id="app-content" class="row">
@@ -45,6 +43,10 @@
         <div id="login-form" data-slidr="login" class="transition-component">
             <div id="map-preview">
                 <span>Toque para agregar su dirección</span>
+            </div>
+            <div id="user-address">
+                <div class="title-text" style="color: white"></div>
+                <div class="subtitle-text" style="color: white;"></div>
             </div>
             <div class="group large-12 small-12 columns">
                 <!--<div class="form-icon name-icon"></div>-->
@@ -70,22 +72,21 @@
             <div class="large-12 small-6 columns small-offset-3">
                 <a id="login" class="button action-buttons">INGRESAR</a>
             </div>
-
         </div>
         <div id="map-content" data-slidr="map-content" class="transition-component">
             <div id="search-address-map"></div>
             <div id="geolocate" class="float-button geolocate-icon"></div>
             <div id="search-status"></div>
             <div id="user-status">
-                <div style="font-size: 18px; padding-right: 45px; line-height: 20px;">5 eventos </div>
-                <div style="font-size: 16px; color: rgb(119, 119, 119);">activos en tu comuna</div>
+                <div class="title-text">5 eventos </div>
+                <div class="subtitle-text">activos en tu comuna</div>
+                <div id="add-new-event">Agregar evento</div>
             </div>
         </div>
         <div id="events-content" data-slidr="events" class="transition-component"> </div>
         <div id="event-confirm" data-slidr="confirm" class="transition-component"> </div>
     </div>
 </div>
-
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?libraries=places&sensor=false"></script>
 <script type="text/javascript" src="vendors/foundation-5.5.2/js/vendor/modernizr.js"></script>
 <script type="text/javascript" src="vendors/foundation-5.5.2/js/vendor/jquery.js"></script>

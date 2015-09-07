@@ -28,6 +28,14 @@
             location_problem: {
                 name: 'location_problem.html',
                 content: ''
+            },
+            user_address: {
+                name: 'user_address.html',
+                content: ''
+            },
+            user_data_content: {
+                name: 'user_data_content.html',
+                content: ''
             }
         },
         initialize = {
@@ -43,6 +51,7 @@
                 });
             }
         };
+
     initialize.readTemplates();
 
     return {

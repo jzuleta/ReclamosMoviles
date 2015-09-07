@@ -14,7 +14,8 @@
             map: null,
             userMarker: null,
             currentPosition: null,
-            autocomplete: null
+            autocomplete: null,
+            userData: {}
         },
         st = {
             topBarContent: "#app-top-bar",
@@ -31,10 +32,14 @@
             closeAdvices: "#close_advices",
             login: "#login",
             editAddress: "#edit-address",
-            loginInputs: "#login-form input[type=text]"
+            loginContent: "#login-form",
+            loginInputs: "#login-form input[type=text]",
+            userAddress: "#user-address",
+            userDataContent: "#user-data-content"
         },
         dom = {},
         catchDom = function() {
+            dom.loginContent = $(st.loginContent);
             dom.topBarContent = $(st.topBarContent);
             dom.appTransition = $(st.appTransition);
             dom.topBarIcon = $(st.topBarIcon);
@@ -45,6 +50,8 @@
             dom.loginInputs = $(st.loginInputs);
             dom.login = $(st.login);
             dom.editAddress = $(st.editAddress);
+            dom.userAddress = $(st.userAddress);
+            dom.userDataContent = $(st.userDataContent);
         },
         navigationControl = {
             createTransitions: function() {
@@ -75,13 +82,14 @@
             cleanPanelStatus: function(timer) {
                 setTimeout(function() {
                     dom.searchStatus.css("margin-bottom", "-300px")
-                       .empty();
+                        .empty();
                 }, timer);
             },
             addressPanel: function(address) {
                 mapControl.processAddress(address);
+
                 navigationControl.createPanelStatus(
-                    Mustache.render(templates.collection.address_detail.content, mapControl.processAddress(address)));
+                    Mustache.render(templates.collection.address_detail.content, app.userData.address));
 
                 $(st.addressProblem).on("click", navigationControl.addressProblem);
                 $(st.addressConfirm).on("click", navigationControl.addressConfirm);
@@ -94,31 +102,34 @@
                 dom.panels.slide("login");
                 dom.topBar.slide("login");
                 dom.mapPreview.empty();
+                dom.userAddress.show()
+                    .html(Mustache.render(templates.collection.user_address.content, app.userData.address));
 
                 navigationControl.cleanPanelStatus(500);
                 var mapPreview = new google.maps.Map(document.getElementById(st.mapPreview.slice(1)), {
-                    center: app.currentPosition,
-                    draggable: false,
-                    streetViewControl: false,
-                    mapTypeControl: false,
-                    overviewMapControl: false,
-                    panControl: false,
-                    zoom: 17,
-                    zoomControl: false,
-                    mapTypeId: google.maps.MapTypeId.ROADMAP
-                });
-
-                var d = new google.maps.Marker({
-                    position: app.currentPosition,
-                    map: mapPreview
-                });
+                        center: app.currentPosition,
+                        draggable: false,
+                        streetViewControl: false,
+                        mapTypeControl: false,
+                        overviewMapControl: false,
+                        panControl: false,
+                        zoom: 17,
+                        zoomControl: false,
+                        mapTypeId: google.maps.MapTypeId.ROADMAP
+                    }),
+                    d = new google.maps.Marker({
+                        position: app.currentPosition,
+                        map: mapPreview
+                    });
             },
             createUserLayout: function() {
-                dom.topBarContent.height(95);
+                dom.topBarContent.height(105);
                 dom.panels.slide("map-content");
                 dom.topBar.slide("user-map");
                 dom.editAddress.toggle();
                 dom.userStatus.toggle();
+
+                dom.userDataContent.html(Mustache.render(templates.collection.user_data_content.content, app.userData.address));
 
             },
             removeUserLayout: function() {
@@ -156,6 +167,9 @@
                 });
             },
             addUserMarker: function() {
+                if (app.userMarker != null)
+                    app.userMarker.setMap(null);
+
                 app.userMarker = new google.maps.Marker({
                     animation: google.maps.Animation.DROP,
                     draggable: true,
@@ -180,7 +194,7 @@
                     if ($.inArray(el, cleanAddress) === -1) cleanAddress.push(el);
                 });
 
-                return {
+                app.userData.address = {
                     primary: cleanAddress[0] + ", " + cleanAddress[1],
                     secondary: cleanAddress[2]
                 };
@@ -240,19 +254,11 @@
 
             navigationControl.createTransitions();
 
-
             dom.mapPreview.on("click", events.addressMap);
             dom.geolocate.on("click", mapControl.positionSearch);
             dom.topBarIcon.on("click", navigationControl.backTo);
             dom.login.on("click", navigationControl.createUserLayout);
             dom.editAddress.on("click", navigationControl.removeUserLayout);
-
-
-            //dom.loginInputs.on("focus", function () {
-            //    setInterval(function() {
-            //        dom.appTransition.animate({ scrollTop: 230 }, "fast");
-            //    }, 1000);
-            //});
         };
 
     catchDom();
