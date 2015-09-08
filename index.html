@@ -21,14 +21,16 @@
         </div>
         <div data-slidr="map-content" class="top-bar-state">
             <span class="top-bar-icon back-icon" data-direction="login"></span>
-            <h3 id="topic-title">Buscar ubicación</h3>
+            <h3>Buscar ubicación</h3>
             <span class="top-bar-icon alternative search-icon" data-direction="searcher"></span>
         </div>
         <div data-slidr="searcher" class="top-bar-state">
             <span class="top-bar-icon back-gray-icon" data-direction="map-content"></span>
             <input type="text" id="search-input"/>
         </div>
-
+        <div data-slidr="events-content" class="top-bar-state">
+            <h3>Eventos activos</h3>
+        </div>
         <div data-slidr="user-map" class="top-bar-state">
             <div id="user-data-content">
                 <h3></h3>
@@ -50,21 +52,21 @@
             </div>
             <div class="group large-12 small-12 columns">
                 <!--<div class="form-icon name-icon"></div>-->
-                <input type="text" required>
+                <input type="text" data-parameter="name" required>
                 <span class="highlight"></span>
                 <span class="bar"></span>
                 <label>Nombre</label>
             </div>
             <div class="group large-6 small-4 columns" style="padding-right: 0">
                 <!--<div class="form-icon identity-icon"></div>-->
-                <input type="text" required>
+                <input type="text" data-parameter="id" required>
                 <span class="highlight"></span>
                 <span class="bar"></span>
                 <label>Rut</label>
             </div>
             <div class="group large-6 small-8 columns">
                 <!--<div class="form-icon email-icon"></div>-->
-                <input type="text" required>
+                <input type="text" data-parameter="email" required>
                 <span class="highlight"></span>
                 <span class="bar"></span>
                 <label>Correo</label>
@@ -83,7 +85,54 @@
                 <div id="add-new-event">Agregar evento</div>
             </div>
         </div>
-        <div id="events-content" data-slidr="events" class="transition-component"> </div>
+        <div id="events-content" data-slidr="events-content" class="transition-component">
+            <div id="cards-content">
+                <div class="event-card">
+                    <div class="event-content">
+                        <div class="title-text">Avenida República 100-146, Santiago</div>
+                        <div class="subtitle-text"> Región Metropolitana</div>
+                    </div>
+                    <div class="action-panel">
+                        <div class=" action-icons users-affected"> 3 usuarios</div>
+                        <div class=" action-icons time-affected"> 2 horas</div>
+                        <div class="send-event"></div>
+                    </div>
+                </div>
+                <div class="event-card">
+                    <div class="event-content">
+                        <div class="title-text">San Pablo 907-933, Santiago</div>
+                        <div class="subtitle-text"> Región Metropolitana</div>
+                    </div>
+                    <div class="action-panel">
+                        <div class=" action-icons users-affected"> 5 usuarios</div>
+                        <div class=" action-icons time-affected"> 3 horas</div>
+                        <div class="send-event"></div>
+                    </div>
+                </div>
+                <div class="event-card">
+                    <div class="event-content">
+                        <div class="title-text">Bandera 450, Santiago</div>
+                        <div class="subtitle-text"> Región Metropolitana</div>
+                    </div>
+                    <div class="action-panel">
+                        <div class=" action-icons users-affected"> 5 usuarios</div>
+                        <div class=" action-icons time-affected"> 1 hora</div>
+                        <div class="send-event"></div>
+                    </div>
+                </div>
+                <div class="event-card">
+                    <div class="event-content">
+                        <div class="title-text">La Paz 232-252, Recoleta</div>
+                        <div class="subtitle-text"> Región Metropolitana</div>
+                    </div>
+                    <div class="action-panel">
+                        <div class=" action-icons users-affected"> 2 usuarios</div>
+                        <div class=" action-icons time-affected"> 30 minutos</div>
+                        <div class="send-event"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div id="event-confirm" data-slidr="confirm" class="transition-component"> </div>
     </div>
 </div>

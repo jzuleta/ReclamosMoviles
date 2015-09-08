@@ -33,7 +33,7 @@
             login: "#login",
             editAddress: "#edit-address",
             loginContent: "#login-form",
-            loginInputs: "#login-form input[type=text]",
+            loginInputs: "#login-form input",
             userAddress: "#user-address",
             userDataContent: "#user-data-content"
         },
@@ -47,7 +47,6 @@
             dom.searchStatus = $(st.searchStatus);
             dom.userStatus = $(st.userStatus);
             dom.mapPreview = $(st.mapPreview);
-            dom.loginInputs = $(st.loginInputs);
             dom.login = $(st.login);
             dom.editAddress = $(st.editAddress);
             dom.userAddress = $(st.userAddress);
@@ -75,6 +74,14 @@
                 dom.panels.slide(direction);
                 dom.topBar.slide(direction);
             },
+            showUserStatus: function() {
+                dom.panels.slide("events-content");
+                dom.topBar.slide("events-content");
+
+                dom.topBarContent.height(57);
+                dom.editAddress.toggle();
+                dom.userStatus.toggle();
+            },
             createPanelStatus: function(template) {
                 dom.searchStatus.html(template);
                 dom.searchStatus.css("margin-bottom", "0");
@@ -89,7 +96,7 @@
                 mapControl.processAddress(address);
 
                 navigationControl.createPanelStatus(
-                    Mustache.render(templates.collection.address_detail.content, app.userData.address));
+                    Mustache.render(templates.collection.address_detail.content, app.userData));
 
                 $(st.addressProblem).on("click", navigationControl.addressProblem);
                 $(st.addressConfirm).on("click", navigationControl.addressConfirm);
@@ -102,8 +109,9 @@
                 dom.panels.slide("login");
                 dom.topBar.slide("login");
                 dom.mapPreview.empty();
+                dom.login.css("display", "block");
                 dom.userAddress.show()
-                    .html(Mustache.render(templates.collection.user_address.content, app.userData.address));
+                    .html(Mustache.render(templates.collection.user_address.content, app.userData));
 
                 navigationControl.cleanPanelStatus(500);
                 var mapPreview = new google.maps.Map(document.getElementById(st.mapPreview.slice(1)), {
@@ -123,19 +131,27 @@
                     });
             },
             createUserLayout: function() {
-                dom.topBarContent.height(105);
-                dom.panels.slide("map-content");
-                dom.topBar.slide("user-map");
-                dom.editAddress.toggle();
-                dom.userStatus.toggle();
-
-                dom.userDataContent.html(Mustache.render(templates.collection.user_data_content.content, app.userData.address));
-
+                if (events.userDataValidation()) {
+                    localDatabase.saveChanges();
+                    dom.topBarContent.height(105);
+                    dom.panels.slide("map-content");
+                    dom.topBar.slide("user-map");
+                    dom.editAddress.toggle();
+                    dom.userStatus.toggle();
+                    dom.userDataContent.html(
+                        Mustache.render(templates.collection.user_data_content.content,
+                            app.userData));
+                }
             },
             removeUserLayout: function() {
                 dom.topBarContent.height(57);
                 dom.editAddress.toggle();
                 dom.userStatus.toggle();
+            },
+            fillUserInputs: function() {
+                $.each($(st.loginInputs+"[type=text]"), function (index, value) {
+                    $(value).val(app.userData[$(value).data('parameter')]);
+                });
             }
         },
         mapControl = {
@@ -151,7 +167,11 @@
                 }
             },
             foundPosition: function(position) {
-                app.currentPosition = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                app.currentPosition =
+                    new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                app.userData.latitude = position.coords.latitude;
+                app.userData.longitude = position.coords.longitude;
+
                 mapControl.addUserMarker();
                 mapControl.getAddressFromCoordinates();
             },
@@ -194,10 +214,9 @@
                     if ($.inArray(el, cleanAddress) === -1) cleanAddress.push(el);
                 });
 
-                app.userData.address = {
-                    primary: cleanAddress[0] + ", " + cleanAddress[1],
-                    secondary: cleanAddress[2]
-                };
+                app.userData.primary_address = cleanAddress[0] + ", " + cleanAddress[1];
+                app.userData.secondary_address = cleanAddress[2];
+
             },
             searchError: function(error) {
                 var errorTemplate = "";
@@ -218,17 +237,31 @@
             }
         },
         localDatabase = {
-            checkExist: function() {
-                return (localStorage.getItem("rm_id") === null) ? false : true;
+            checkExist: function () {
+                return (localStorage.getItem("rm_user") == null) ? false : true;
             },
-            saveChanges: function(userData) {
-                localStorage.setItem("rm_user", JSON.stringify(userData));
+            saveChanges: function() {
+                localStorage.setItem("rm_user", JSON.stringify(app.userData));
             }
         },
         events = {
             addressMap: function() {
                 dom.panels.slide("map-content");
                 dom.topBar.slide("map-content");
+            },
+            userDataValidation: function() {
+                var isValid = true;
+                $.each($(st.loginInputs), function(index, value) {
+                    if ($.trim(value.value).length === 0) {
+                        isValid = false;
+                        $(value).addClass("input-error");
+                    } else {
+                        app.userData[$(value).data('parameter')] = value.value;
+                        $(value).removeClass("input-error");
+                    }
+                });
+
+                return isValid;
             },
             initializeMaps: function() {
                 app.map = new google.maps.Map(document.getElementById(st.searchAddressMap.slice(1)), app.mapOptions);
@@ -254,13 +287,29 @@
 
             navigationControl.createTransitions();
 
+            dom.userStatus.on("click", navigationControl.showUserStatus);
             dom.mapPreview.on("click", events.addressMap);
             dom.geolocate.on("click", mapControl.positionSearch);
             dom.topBarIcon.on("click", navigationControl.backTo);
             dom.login.on("click", navigationControl.createUserLayout);
             dom.editAddress.on("click", navigationControl.removeUserLayout);
-        };
+        },
+        checkLocalDatabase = function() {
+            if (localDatabase.checkExist()) {
+                app.userData = jQuery.parseJSON(localStorage.getItem("rm_user"));
+                app.currentPosition =
+                    new google.maps.LatLng(app.userData.latitude, app.userData.longitude);
 
+                mapControl.addUserMarker();
+                navigationControl.addressConfirm();
+                navigationControl.fillUserInputs();
+                navigationControl.createUserLayout();
+
+            }
+        };
+    
+    
     catchDom();
     suscribeEvents();
+    checkLocalDatabase();
 })();
