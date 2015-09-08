@@ -1,28 +1,28 @@
-﻿var appController = (function() {
+﻿var appController = (function () {
     var app = {
-            mapOptions: {
-                center: new google.maps.LatLng(-33.436936630999635, -70.64826747099966),
-                streetViewControl: false,
-                mapTypeControl: false,
-                overviewMapControl: false,
-                panControl: false,
-                zoom: 16,
-                zoomControl: false,
-                mapTypeId: google.maps.MapTypeId.ROADMAP
-            },
-            geocoder: new google.maps.Geocoder(),
-            map: null,
-            userMarker: null,
-            currentPosition: null,
-            autocomplete: null,
-            userData: {}
+        mapOptions: {
+            center: new google.maps.LatLng(-33.436936630999635, -70.64826747099966),
+            streetViewControl: false,
+            mapTypeControl: false,
+            overviewMapControl: false,
+            panControl: false,
+            zoom: 16,
+            zoomControl: false,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
         },
+        geocoder: new google.maps.Geocoder(),
+        map: null,
+        userMarker: null,
+        currentPosition: null,
+        autocomplete: null,
+        userData: {}
+    },
         st = {
             topBarContent: "#app-top-bar",
             appTransition: "#app-transitions",
             searchAddressMap: "#search-address-map",
             geolocate: "#geolocate",
-            topBarIcon: ".top-bar-icon",
+            topBarIcon: ".top-action",
             searchStatus: "#search-status",
             userStatus: "#user-status",
             inputSearch: "#search-input",
@@ -35,10 +35,11 @@
             loginContent: "#login-form",
             loginInputs: "#login-form input",
             userAddress: "#user-address",
-            userDataContent: "#user-data-content"
+            userDataContent: "#user-data-content",
+            closePanel: ".alternative.close-icon"
         },
         dom = {},
-        catchDom = function() {
+        catchDom = function () {
             dom.loginContent = $(st.loginContent);
             dom.topBarContent = $(st.topBarContent);
             dom.appTransition = $(st.appTransition);
@@ -51,9 +52,10 @@
             dom.editAddress = $(st.editAddress);
             dom.userAddress = $(st.userAddress);
             dom.userDataContent = $(st.userDataContent);
+            dom.closePanel = $(st.closePanel);
         },
         navigationControl = {
-            createTransitions: function() {
+            createTransitions: function () {
                 dom.panels = slidr.create(st.appTransition.slice(1), {
                     controls: "none",
                     fade: true,
@@ -69,30 +71,28 @@
                     transition: "none"
                 }).start();
             },
-            backTo: function() {
+            backTo: function () {
                 var direction = $(this).data("direction");
                 dom.panels.slide(direction);
                 dom.topBar.slide(direction);
             },
-            showUserStatus: function() {
+            showUserStatus: function () {
                 dom.panels.slide("events-content");
                 dom.topBar.slide("events-content");
 
-                dom.topBarContent.height(57);
-                dom.editAddress.toggle();
-                dom.userStatus.toggle();
+                navigationControl.removeUserLayout();
             },
-            createPanelStatus: function(template) {
+            createPanelStatus: function (template) {
                 dom.searchStatus.html(template);
                 dom.searchStatus.css("margin-bottom", "0");
             },
-            cleanPanelStatus: function(timer) {
-                setTimeout(function() {
+            cleanPanelStatus: function (timer) {
+                setTimeout(function () {
                     dom.searchStatus.css("margin-bottom", "-300px")
                         .empty();
                 }, timer);
             },
-            addressPanel: function(address) {
+            addressPanel: function (address) {
                 mapControl.processAddress(address);
 
                 navigationControl.createPanelStatus(
@@ -101,11 +101,13 @@
                 $(st.addressProblem).on("click", navigationControl.addressProblem);
                 $(st.addressConfirm).on("click", navigationControl.addressConfirm);
             },
-            addressProblem: function() {
+            addressProblem: function () {
                 dom.searchStatus.html(templates.collection.location_problem.content);
-                $(st.closeAdvices).on("click", function() { navigationControl.cleanPanelStatus(10); });
+                $(st.closeAdvices).on("click", function () {
+                    navigationControl.cleanPanelStatus(10);
+                });
             },
-            addressConfirm: function() {
+            addressConfirm: function () {
                 dom.panels.slide("login");
                 dom.topBar.slide("login");
                 dom.mapPreview.empty();
@@ -115,47 +117,54 @@
 
                 navigationControl.cleanPanelStatus(500);
                 var mapPreview = new google.maps.Map(document.getElementById(st.mapPreview.slice(1)), {
-                        center: app.currentPosition,
-                        draggable: false,
-                        streetViewControl: false,
-                        mapTypeControl: false,
-                        overviewMapControl: false,
-                        panControl: false,
-                        zoom: 17,
-                        zoomControl: false,
-                        mapTypeId: google.maps.MapTypeId.ROADMAP
-                    }),
+                    center: app.currentPosition,
+                    draggable: false,
+                    streetViewControl: false,
+                    mapTypeControl: false,
+                    overviewMapControl: false,
+                    panControl: false,
+                    zoom: 17,
+                    zoomControl: false,
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                }),
                     d = new google.maps.Marker({
                         position: app.currentPosition,
                         map: mapPreview
                     });
             },
-            createUserLayout: function() {
+            createUserLayout: function () {
                 if (events.userDataValidation()) {
+                    app.userMarker.setOptions({
+                        draggable: false
+                    });
                     localDatabase.saveChanges();
-                    dom.topBarContent.height(105);
-                    dom.panels.slide("map-content");
-                    dom.topBar.slide("user-map");
-                    dom.editAddress.toggle();
-                    dom.userStatus.toggle();
+
+                    navigationControl.configUserLayout();
                     dom.userDataContent.html(
                         Mustache.render(templates.collection.user_data_content.content,
                             app.userData));
                 }
             },
-            removeUserLayout: function() {
+            configUserLayout: function () {
+                dom.topBarContent.height(105);
+                dom.panels.slide("map-content");
+                dom.topBar.slide("user-map");
+                dom.editAddress.toggle();
+                dom.userStatus.toggle();
+            },
+            removeUserLayout: function () {
                 dom.topBarContent.height(57);
                 dom.editAddress.toggle();
                 dom.userStatus.toggle();
             },
-            fillUserInputs: function() {
-                $.each($(st.loginInputs+"[type=text]"), function (index, value) {
-                    $(value).val(app.userData[$(value).data('parameter')]);
+            fillUserInputs: function () {
+                $.each($(st.loginInputs + "[type=text]"), function (index, value) {
+                    $(value).val(app.userData[$(value).data("parameter")]);
                 });
             }
         },
         mapControl = {
-            positionSearch: function() {
+            positionSearch: function () {
                 if (navigator && navigator.geolocation) {
                     navigationControl.createPanelStatus(templates.collection.searching.content);
                     navigator.geolocation.getCurrentPosition(mapControl.foundPosition, mapControl.searchError, {
@@ -166,7 +175,7 @@
                     navigationControl.createPanelStatus(templates.collection.compatibility_error.content);
                 }
             },
-            foundPosition: function(position) {
+            foundPosition: function (position) {
                 app.currentPosition =
                     new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
                 app.userData.latitude = position.coords.latitude;
@@ -175,10 +184,10 @@
                 mapControl.addUserMarker();
                 mapControl.getAddressFromCoordinates();
             },
-            getAddressFromCoordinates: function() {
+            getAddressFromCoordinates: function () {
                 app.geocoder.geocode({
                     'latLng': app.currentPosition
-                }, function(results, status) {
+                }, function (results, status) {
                     if (status === google.maps.GeocoderStatus.OK) {
                         navigationControl.addressPanel(results[0].formatted_address);
                     } else {
@@ -186,7 +195,7 @@
                     }
                 });
             },
-            addUserMarker: function() {
+            addUserMarker: function () {
                 if (app.userMarker != null)
                     app.userMarker.setMap(null);
 
@@ -200,17 +209,17 @@
                 app.map.panTo(app.currentPosition);
                 app.map.setZoom(16);
 
-                google.maps.event.addListener(app.userMarker, "dragend", function(event) {
+                google.maps.event.addListener(app.userMarker, "dragend", function (event) {
                     app.currentPosition = new google.maps.LatLng(event.latLng.lat(), event.latLng.lng());
                     app.map.panTo(app.currentPosition);
                     mapControl.getAddressFromCoordinates();
                 });
             },
-            processAddress: function(address) {
+            processAddress: function (address) {
                 var partAddress = address.split(","),
                     cleanAddress = [];
 
-                $.each(partAddress, function(i, el) {
+                $.each(partAddress, function (i, el) {
                     if ($.inArray(el, cleanAddress) === -1) cleanAddress.push(el);
                 });
 
@@ -218,18 +227,18 @@
                 app.userData.secondary_address = cleanAddress[2];
 
             },
-            searchError: function(error) {
+            searchError: function (error) {
                 var errorTemplate = "";
                 switch (error.code) {
-                case 1:
-                    errorTemplate = "permission_denied";
-                    break;
-                case 2:
-                    errorTemplate = "position_unavailable";
-                    break;
-                case 3:
-                    errorTemplate = "timeout";
-                    break;
+                    case 1:
+                        errorTemplate = "permission_denied";
+                        break;
+                    case 2:
+                        errorTemplate = "position_unavailable";
+                        break;
+                    case 3:
+                        errorTemplate = "timeout";
+                        break;
                 }
 
                 navigationControl.createPanelStatus(templates.collection[errorTemplate].content);
@@ -240,38 +249,45 @@
             checkExist: function () {
                 return (localStorage.getItem("rm_user") == null) ? false : true;
             },
-            saveChanges: function() {
+            saveChanges: function () {
                 localStorage.setItem("rm_user", JSON.stringify(app.userData));
             }
         },
         events = {
-            addressMap: function() {
+            addressMap: function () {
+                if (app.userMarker !== null)
+                    app.userMarker.setOptions({
+                        draggable: true
+                    });
+
                 dom.panels.slide("map-content");
                 dom.topBar.slide("map-content");
             },
-            userDataValidation: function() {
+            userDataValidation: function () {
                 var isValid = true;
-                $.each($(st.loginInputs), function(index, value) {
+                $.each($(st.loginInputs), function (index, value) {
                     if ($.trim(value.value).length === 0) {
                         isValid = false;
                         $(value).addClass("input-error");
                     } else {
-                        app.userData[$(value).data('parameter')] = value.value;
+                        app.userData[$(value).data("parameter")] = value.value;
                         $(value).removeClass("input-error");
                     }
                 });
 
                 return isValid;
             },
-            initializeMaps: function() {
+            initializeMaps: function () {
                 app.map = new google.maps.Map(document.getElementById(st.searchAddressMap.slice(1)), app.mapOptions);
 
                 var input = document.getElementById(st.inputSearch.slice(1)),
                     options = {
-                        componentRestrictions: { country: "cl" }
+                        componentRestrictions: {
+                            country: "cl"
+                        }
                     };
                 app.autocomplete = new google.maps.places.Autocomplete(input, options);
-                google.maps.event.addListener(app.autocomplete, "place_changed", function() {
+                google.maps.event.addListener(app.autocomplete, "place_changed", function () {
                     var position = app.autocomplete.getPlace();
                     mapControl.foundPosition({
                         coords: {
@@ -282,7 +298,7 @@
                 });
             }
         },
-        suscribeEvents = function() {
+        suscribeEvents = function () {
             events.initializeMaps();
 
             navigationControl.createTransitions();
@@ -293,8 +309,9 @@
             dom.topBarIcon.on("click", navigationControl.backTo);
             dom.login.on("click", navigationControl.createUserLayout);
             dom.editAddress.on("click", navigationControl.removeUserLayout);
+            dom.closePanel.on("click", navigationControl.configUserLayout);
         },
-        checkLocalDatabase = function() {
+        checkLocalDatabase = function () {
             if (localDatabase.checkExist()) {
                 app.userData = jQuery.parseJSON(localStorage.getItem("rm_user"));
                 app.currentPosition =
@@ -307,8 +324,7 @@
 
             }
         };
-    
-    
+
     catchDom();
     suscribeEvents();
     checkLocalDatabase();
