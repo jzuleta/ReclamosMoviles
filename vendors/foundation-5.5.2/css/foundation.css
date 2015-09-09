@@ -1543,7 +1543,7 @@ input[type="submit"] {
 
 /* Respect enforced amount of rows for textarea */
 textarea[rows] {
-  height: auto; }
+    height: 90px !important; }
 
 /* Not allow resize out of parent */
 textarea {

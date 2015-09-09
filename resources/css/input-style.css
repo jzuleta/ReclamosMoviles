@@ -2,7 +2,7 @@
     margin-bottom: 30px;
 }
 
-input {
+input, textarea {
     border-color: #e0e0e0 !important;
     border-style: none none solid !important;
     border-width: medium medium thin !important;
@@ -16,7 +16,7 @@ input {
     padding: 7px 0 5px !important;
 }
 
-input:focus {
+input:focus, textarea:focus {
     background: white !important;
     border-bottom: 2px solid #2196f3 !important;
 }
@@ -27,7 +27,7 @@ input:focus {
     width: 100%;
 }
 
-input:focus {
+input:focus, textarea:focus {
     background: #fff!important;
     border-bottom: 2px solid gray!important
 }

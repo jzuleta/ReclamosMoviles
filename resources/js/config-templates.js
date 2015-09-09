@@ -36,6 +36,10 @@
             user_data_content: {
                 name: 'user_data_content.html',
                 content: ''
+            },
+            event_confirm: {
+                name: 'event_confirm.html',
+                content: ''
             }
         },
         initialize = {

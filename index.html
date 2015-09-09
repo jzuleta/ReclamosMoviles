@@ -13,6 +13,11 @@
     <link rel="stylesheet" href="resources/css/input-style.css"/>
 </head>
 <body>
+<div id="splash">
+    <div class="small-12 columns small-text-center" style="">
+        <div style="font-size: 16px; font-weight: 500; color: rgb(95, 95, 95); margin-top: 25px;">Cargando...</div>
+    </div>
+</div>
 <div id="top-bar-content">
     <div id="edit-address" class="float-button edit-icon top-bar-icon top-action" data-direction="login"></div>
     <div id="app-top-bar">
@@ -38,6 +43,10 @@
                 <div style="font-size: 16px; color: white; margin-top: -6px; margin-bottom: 5px;"></div>
                 <div style="font-size: 14px; background: rgb(25, 118, 210) none repeat scroll 0% 0%; color: white; font-weight: 500; float: left; padding: 2px 16px; border-radius: 2px;">CHILECTRA </div>
             </div>
+        </div>
+        <div data-slidr="event-confirm" class="top-bar-state">
+            <h3>Confirmar evento</h3>
+            <span class="top-bar-icon alternative close-icon" data-direction="map-content"></span>
         </div>
     </div>
 </div>
@@ -78,15 +87,17 @@
             <div id="geolocate" class="float-button geolocate-icon"></div>
             <div id="search-status"></div>
             <div id="user-status">
-                <div class="title-text">5 eventos </div>
-                <div class="subtitle-text">activos en tu comuna</div>
+                <div id="current-status">
+                    <div class="title-text">5 eventos </div>
+                    <div class="subtitle-text">activos en tu comuna</div>
+                </div>
                 <div id="add-new-event">Agregar evento</div>
             </div>
         </div>
         <div id="events-content" data-slidr="events-content" class="transition-component">
             <div id="events-line"></div>
             <div id="cards-content">
-                <div class="event-card">
+                <div id="0" class="event-card">
                     <div class="point-card"></div>
                     <div class="event-content">
                         <div class=" action-icons users-affected">1</div>
@@ -95,11 +106,11 @@
                         <div class="tag-empresa">chilectra</div>
                     </div>
                     <div class="action-panel">
-                        <div class=" action-icons time-affected">2 horas atras</div>
+                        <div class=" action-icons time-affected">2 horas atrás</div>
                         <div class="send-event"></div>
                     </div>
                 </div>
-                <div class="event-card">
+                <div id="1" class="event-card">
                     <div class="point-card"></div>
                     <div class="event-content">
                         <div class=" action-icons users-affected">5</div>
@@ -108,11 +119,11 @@
                         <div class="tag-empresa">chilectra</div>
                     </div>
                     <div class="action-panel">
-                        <div class=" action-icons time-affected">1 horas atras</div>
+                        <div class=" action-icons time-affected">1 horas atrás</div>
                         <div class="send-event"></div>
                     </div>
                 </div>
-                <div class="event-card">
+                <div id="2" class="event-card">
                     <div class="point-card"></div>
                     <div class="event-content">
                         <div class=" action-icons users-affected">3</div>
@@ -121,11 +132,11 @@
                         <div class="tag-empresa">chilectra</div>
                     </div>
                     <div class="action-panel">
-                        <div class=" action-icons time-affected">30 minutos atras</div>
+                        <div class=" action-icons time-affected">30 minutos atrás</div>
                         <div class="send-event"></div>
                     </div>
                 </div>
-                <div class="event-card">
+                <div id="3" class="event-card">
                     <div class="point-card"></div>
                     <div class="event-content">
                         <div class=" action-icons users-affected">9</div>
@@ -134,13 +145,26 @@
                         <div class="tag-empresa">chilectra</div>
                     </div>
                     <div class="action-panel">
-                        <div class=" action-icons time-affected">2 horas atras</div>
+                        <div class=" action-icons time-affected">2 horas atrás</div>
                         <div class="send-event"></div>
                     </div>
                 </div>
             </div>
         </div>
-        <div id="event-confirm" data-slidr="confirm" class="transition-component"> </div>
+        <div id="event-confirm" data-slidr="event-confirm" class="transition-component">
+            <div id="confirmation-detail" class="event-content">
+
+            </div>
+            <div class="group large-12 small-12 columns">
+                <textarea type="text" data-parameter="detail" rows="8" required></textarea>
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                <label>Observaciones</label>
+            </div>
+            <div class="large-12 small-12 columns">
+                <a class="button action-buttons">INGRESAR EVENTO</a>
+            </div>
+        </div>
     </div>
 </div>
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?libraries=places&sensor=false"></script>
@@ -149,6 +173,7 @@
 <script type="text/javascript" src="vendors/foundation-5.5.2/js/foundation.min.js"></script>
 <script type="text/javascript" src="vendors/mustache-js/mustache.min.js"></script>
 <script type="text/javascript" src="vendors/slidr/slidr.min.js"></script>
+<script type="text/javascript" src="resources/js/data-test.js"></script>
 <script type="text/javascript" src="resources/js/screen-config.js"></script>
 <script type="text/javascript" src="resources/js/config-templates.js"></script>
 <script type="text/javascript" src="resources/js/app.js"></script>
