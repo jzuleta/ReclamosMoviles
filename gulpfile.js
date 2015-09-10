@@ -1,5 +1,6 @@
 ﻿var gulp = require("gulp"),
-     rename = require("gulp-rename"),
+    rename = require("gulp-rename"),
+    minifycss = require("gulp-minify-css"),
     autoprefixer = require("gulp-autoprefixer");
 
 gulp.task("add-prefixes", function() {
@@ -9,6 +10,12 @@ gulp.task("add-prefixes", function() {
             cascade: false,
             remove: true
         }))
+        .pipe(gulp.dest("resources/css/"));
+});
+
+gulp.task("minify-css", function() {
+    gulp.src("resources/css/app.css")
+        .pipe(minifycss())
         .pipe(gulp.dest("resources/css/"));
 });
 

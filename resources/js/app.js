@@ -201,7 +201,7 @@
                 navigationControl.fillUserConfirm();
 
                 dom.confirmationDetail.html(
-                    Mustache.render(templates.collection.event_confirm.content, db.information[$(this).attr('id')]));
+                    Mustache.render(templates.collection.event_confirm.content, db.information[$(this).attr("id")]));
 
                 app.lastPanelState = "card";
             }
@@ -285,6 +285,18 @@
                 }
                 navigationControl.createPanelStatus(templates.collection[errorTemplate].content);
                 navigationControl.cleanPanelStatus(3000);
+            },
+            fixInfoWindow: function () {
+                var set = google.maps.InfoWindow.prototype.set;
+                google.maps.InfoWindow.prototype.set = function (key, val) {
+                    if (key === "map") {
+                        if (!this.get("noSupress")) {
+                            console.log("This InfoWindow is supressed. To enable it, set \"noSupress\" option to true");
+                            return;
+                        }
+                    }
+                    set.apply(this, arguments);
+                };
             }
         },
         localDatabase = {
@@ -338,6 +350,8 @@
                         }
                     });
                 });
+
+                mapControl.fixInfoWindow();
             }
         },
         suscribeEvents = function() {
@@ -367,8 +381,8 @@
                 navigationControl.createUserLayout();
             }
         },
-        removeSplash = function () {
-            $(window).load(function () {
+        removeSplash = function() {
+            $(window).load(function() {
                 $("#splash").remove();
             });
         };
