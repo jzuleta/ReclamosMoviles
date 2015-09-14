@@ -331,6 +331,13 @@
 
                 return isValid;
             },
+            loginFocus: function () {
+                $(st.loginInputs + "[type=text]").focus(function() {
+                    dom.mapPreview.toggle();
+                }).blur(function() {
+                    dom.mapPreview.toggle();
+                });
+            },
             initializeMaps: function() {
                 app.map = new google.maps.Map(document.getElementById(st.searchAddressMap.slice(1)), app.mapOptions);
 
@@ -356,6 +363,7 @@
         },
         suscribeEvents = function() {
             events.initializeMaps();
+            //events.loginFocus();
 
             navigationControl.createTransitions();
 

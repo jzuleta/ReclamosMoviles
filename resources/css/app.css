@@ -1,23 +1,23 @@
 * { font-family: Roboto, Helvetica, Arial, sans-serif !important }
 
 #splash {
-    background: #e8e8e8 none repeat scroll 0 0;
-    height: 100%;
-    position: absolute;
-    width: 100%;
-    z-index: 3;
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    display: flex;
     -webkit-box-align: center;
     -webkit-align-items: center;
     -ms-flex-align: center;
     align-items: center;
+    background: #e8e8e8 none repeat scroll 0 0;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    height: 100%;
     -webkit-box-pack: center;
     -webkit-justify-content: center;
     -ms-flex-pack: center;
     justify-content: center;
+    position: absolute;
+    width: 100%;
+    z-index: 3;
 }
 
 #top-bar-content {
@@ -188,7 +188,6 @@
     background-repeat: no-repeat;
     background-size: 101px auto;
     height: 140px;
-    margin-bottom: 50px
 }
 
 #map-preview > span {
@@ -204,9 +203,7 @@
 #user-address {
     background-color: #2196f3;
     display: none;
-    margin-bottom: 40px;
-    margin-top: -50px;
-    padding: 16px
+    padding: 16px;
 }
 
 .float-button {
@@ -228,10 +225,10 @@
 }
 
 #add-new-event {
-  -webkit-box-align: end;
-  -webkit-align-items: flex-end;
-  -ms-flex-align: end;
-  align-items: flex-end;
+    -webkit-box-align: end;
+    -webkit-align-items: flex-end;
+    -ms-flex-align: end;
+    align-items: flex-end;
     background-color: #fafafa;
     background-image: url("../images/add_circle.svg");
     background-position: center 10px;
@@ -262,7 +259,7 @@
     background: #fff;
     border-radius: 2px;
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .14), 0 3px 1px -2px rgba(0, 0, 0, .2), 0 1px 5px 0 rgba(0, 0, 0, .12);
-    margin-bottom: 8px
+    margin-bottom: 10px
 }
 
 .action-panel {
@@ -279,7 +276,10 @@
     margin-top: 15px
 }
 
-.event-content { padding: 10px 16px 0 }
+.event-content {
+    min-height: 115px;
+    padding: 10px 16px 0;
+}
 
 .time-affected { background-image: url(../images/time.svg) }
 
@@ -326,12 +326,13 @@
     width: 11px
 }
 
-#events-line {
-    background: rgba(0, 0, 0, .1);
-    height: 100%;
+.events-line {
+    background: rgba(0, 0, 0, 0.1) none repeat scroll 0 0;
+    height: 185px;
     left: 14px;
     position: absolute;
-    width: 1px
+    width: 1px;
+    z-index: -1;
 }
 
 .time {

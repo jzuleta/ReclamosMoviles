@@ -1,33 +1,24 @@
 ﻿.group {
-    margin-bottom: 30px;
+    margin-bottom: 30px
 }
 
-input, textarea {
-    border-color: #e0e0e0 !important;
-    border-style: none none solid !important;
-    border-width: medium medium thin !important;
-    box-shadow: none !important;
-    color: #3c3c3c !important;
-    display: block !important;
-    font-size: 16px !important;
-    font-weight: 400 !important;
-    height: 35px !important;
-    margin: 0 !important;
-    padding: 7px 0 5px !important;
+input,
+textarea {
+    border-color: #e0e0e0!important;
+    border-style: none none solid!important;
+    border-width: medium medium thin!important;
+    box-shadow: none!important;
+    color: #3c3c3c!important;
+    display: block!important;
+    font-size: 16px!important;
+    font-weight: 400!important;
+    height: 35px!important;
+    margin: 0!important;
+    padding: 7px 0 5px!important
 }
 
-input:focus, textarea:focus {
-    background: white !important;
-    border-bottom: 2px solid #2196f3 !important;
-}
-
-.bar {
-    display: block;
-    position: relative;
-    width: 100%;
-}
-
-input:focus, textarea:focus {
+input:focus,
+textarea:focus {
     background: #fff!important;
     border-bottom: 2px solid gray!important
 }
@@ -36,7 +27,7 @@ label {
     -moz-transition: .2s ease all;
     -webkit-transition: .2s ease all;
     bottom: 4px;
-    color: #a7a7a7;
+    color: #777;
     font-size: 16px;
     font-size: 14px;
     font-weight: 400;
@@ -67,17 +58,20 @@ label {
     width: 0
 }
 
-.bar:before { left: 50%; }
+.bar:before {
+    left: 50%
+}
 
-.bar:after { right: 50%; }
-
+.bar:after {
+    right: 50%
+}
 
 .highlight {
     height: 60%;
     left: 0;
-    opacity: 0.5;
+    opacity: .5;
     pointer-events: none;
     position: absolute;
     top: 25%;
-    width: 100px;
+    width: 100px
 }

@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reclamos moviles (Desarrollo)</title>
+    <link rel="icon" type="image/png" href="resources/images/disconnected.png">
     <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700" type="text/css"/>
     <link rel="stylesheet" href="vendors/foundation-5.5.2/css/normalize.css">
     <link rel="stylesheet" href="vendors/foundation-5.5.2/css/foundation.css">
@@ -15,7 +16,7 @@
 <body>
 <div id="splash">
     <div class="small-12 columns small-text-center" style="">
-        <div style="font-size: 16px; font-weight: 500; color: rgb(95, 95, 95); margin-top: 25px;">Cargando...</div>
+        <div style="font-size: 18px; font-weight: 500; color: rgb(95, 95, 95); margin-top: 25px;">Cargando...</div>
     </div>
 </div>
 <div id="top-bar-content">
@@ -60,7 +61,7 @@
                 <div class="title-text" style="color: white"></div>
                 <div class="subtitle-text" style="color: white;"></div>
             </div>
-            <div class="group large-12 small-12 columns">
+            <div class="group large-12 small-12 columns" style="margin-top: 40px;">
                 <input type="text" data-parameter="name" required>
                 <span class="highlight"></span>
                 <span class="bar"></span>
@@ -95,10 +96,10 @@
             </div>
         </div>
         <div id="events-content" data-slidr="events-content" class="transition-component">
-            <div id="events-line"></div>
             <div id="cards-content">
                 <div id="0" class="event-card">
                     <div class="point-card"></div>
+                    <div class="events-line"></div>
                     <div class="event-content">
                         <div class=" action-icons users-affected">1</div>
                         <div class="title-text">Avenida República 100-146, Santiago</div>
@@ -112,6 +113,7 @@
                 </div>
                 <div id="1" class="event-card">
                     <div class="point-card"></div>
+                    <div class="events-line"></div>
                     <div class="event-content">
                         <div class=" action-icons users-affected">5</div>
                         <div class="title-text">La Paz 232-252, Recoleta</div>
@@ -125,6 +127,7 @@
                 </div>
                 <div id="2" class="event-card">
                     <div class="point-card"></div>
+                    <div class="events-line"></div>
                     <div class="event-content">
                         <div class=" action-icons users-affected">3</div>
                         <div class="title-text">San Pablo 907-933, Santiago</div>
@@ -138,6 +141,7 @@
                 </div>
                 <div id="3" class="event-card">
                     <div class="point-card"></div>
+                    <div class="events-line"></div>
                     <div class="event-content">
                         <div class=" action-icons users-affected">9</div>
                         <div class="title-text">Bandera 450, Santiago</div>
