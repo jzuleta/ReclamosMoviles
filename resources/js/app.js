@@ -239,7 +239,7 @@
                 });
             },
             addUserMarker: function() {
-                if (app.userMarker != null)
+                if (app.userMarker !== null)
                     app.userMarker.setMap(null);
 
                 app.userMarker = new google.maps.Marker({
@@ -286,9 +286,9 @@
                 navigationControl.createPanelStatus(templates.collection[errorTemplate].content);
                 navigationControl.cleanPanelStatus(3000);
             },
-            fixInfoWindow: function () {
+            fixInfoWindow: function() {
                 var set = google.maps.InfoWindow.prototype.set;
-                google.maps.InfoWindow.prototype.set = function (key, val) {
+                google.maps.InfoWindow.prototype.set = function(key, val) {
                     if (key === "map") {
                         if (!this.get("noSupress")) {
                             console.log("This InfoWindow is supressed. To enable it, set \"noSupress\" option to true");
@@ -301,7 +301,7 @@
         },
         localDatabase = {
             checkExist: function() {
-                return (localStorage.getItem("rm_user") == null) ? false : true;
+                return (localStorage.getItem("rm_user") === null) ? false : true;
             },
             saveChanges: function() {
                 localStorage.setItem("rm_user", JSON.stringify(app.userData));
@@ -331,13 +331,6 @@
 
                 return isValid;
             },
-            loginFocus: function () {
-                $(st.loginInputs + "[type=text]").focus(function() {
-                    dom.mapPreview.toggle();
-                }).blur(function() {
-                    dom.mapPreview.toggle();
-                });
-            },
             initializeMaps: function() {
                 app.map = new google.maps.Map(document.getElementById(st.searchAddressMap.slice(1)), app.mapOptions);
 
@@ -352,8 +345,8 @@
                     var position = app.autocomplete.getPlace();
                     mapControl.foundPosition({
                         coords: {
-                            latitude: position.geometry.location.G,
-                            longitude: position.geometry.location.K
+                            latitude: position.geometry.location.lat(),
+                            longitude: position.geometry.location.lng()
                         }
                     });
                 });
@@ -363,7 +356,6 @@
         },
         suscribeEvents = function() {
             events.initializeMaps();
-            //events.loginFocus();
 
             navigationControl.createTransitions();
 
