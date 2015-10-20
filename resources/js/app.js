@@ -64,6 +64,9 @@
             dom.eventCards = $(st.eventCards);
         },
         navigationControl = {
+            addBrowserHistory: function(state) {
+                history.pushState({ state: state }, state, "#" + state);
+            },
             createTransitions: function() {
                 dom.panels = slidr.create(st.appTransition.slice(1), {
                     controls: "none",
@@ -84,13 +87,13 @@
                 var direction = $(this).data("direction");
                 dom.panels.slide(direction);
                 dom.topBar.slide(direction);
+                navigationControl.addBrowserHistory(direction);
             },
             showUserStatus: function() {
                 dom.panels.slide("events-content");
                 dom.topBar.slide("events-content");
-
+                navigationControl.addBrowserHistory("events-content");
                 navigationControl.removeUserLayout();
-
                 app.lastPanelState = "map";
             },
             createPanelStatus: function(template) {
@@ -121,6 +124,7 @@
             addressConfirm: function() {
                 dom.panels.slide("login");
                 dom.topBar.slide("login");
+                navigationControl.addBrowserHistory("login");
                 dom.mapPreview.empty();
                 dom.login.css("display", "block");
                 dom.userAddress.show()
@@ -160,8 +164,12 @@
                 dom.topBarContent.height(105);
                 dom.panels.slide("map-content");
                 dom.topBar.slide("user-map");
+                navigationControl.addBrowserHistory("user-map");
+                navigationControl.cleanPanelStatus(500);
                 dom.editAddress.show();
                 dom.userStatus.show();
+
+
             },
             closeControl: function() {
                 if (app.lastPanelState === "map") {
@@ -169,6 +177,7 @@
                 } else {
                     dom.panels.slide("events-content");
                     dom.topBar.slide("events-content");
+                    navigationControl.addBrowserHistory("events-content");
                     app.lastPanelState = "map";
                 }
             },
@@ -186,6 +195,7 @@
                 navigationControl.removeUserLayout();
                 dom.panels.slide("event-confirm");
                 dom.topBar.slide("event-confirm");
+                navigationControl.addBrowserHistory("event-confirm");
             },
             confirmNewEvent: function() {
                 navigationControl.fillUserConfirm();
@@ -268,7 +278,6 @@
 
                 app.userData.primary_address = cleanAddress[0] + ", " + cleanAddress[1];
                 app.userData.secondary_address = cleanAddress[2];
-
             },
             searchError: function(error) {
                 var errorTemplate = "";
@@ -316,6 +325,7 @@
 
                 dom.panels.slide("map-content");
                 dom.topBar.slide("map-content");
+                navigationControl.addBrowserHistory("map-content");
             },
             userDataValidation: function() {
                 var isValid = true;
@@ -350,7 +360,6 @@
                         }
                     });
                 });
-
                 mapControl.fixInfoWindow();
             }
         },
@@ -379,11 +388,23 @@
                 navigationControl.addressConfirm();
                 navigationControl.fillUserInputs();
                 navigationControl.createUserLayout();
+            } else {
+                navigationControl.addBrowserHistory("login");
             }
         },
         removeSplash = function() {
             $(window).load(function() {
                 $("#splash").remove();
+            });
+
+            window.addEventListener("popstate", function(e) {
+                dom.panels.slide(e.state.state);
+                dom.topBar.slide(e.state.state);
+
+                if (e.state.state === "user-map")
+                    navigationControl.configUserLayout();
+                else
+                    navigationControl.removeUserLayout();
             });
         };
 
@@ -392,4 +413,3 @@
     checkLocalDatabase();
     removeSplash();
 })();
-
