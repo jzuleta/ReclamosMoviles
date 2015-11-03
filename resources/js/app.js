@@ -1,23 +1,24 @@
 ﻿var appController = (function() {
     var app = {
-            mapOptions: {
-                center: new google.maps.LatLng(-33.436936630999635, -70.64826747099966),
-                streetViewControl: false,
-                mapTypeControl: false,
-                overviewMapControl: false,
-                panControl: false,
-                zoom: 16,
-                zoomControl: false,
-                mapTypeId: google.maps.MapTypeId.ROADMAP
-            },
-            geocoder: new google.maps.Geocoder(),
-            map: null,
-            userMarker: null,
-            currentPosition: null,
-            autocomplete: null,
-            userData: {},
-            lastPanelState: null
+        mapOptions: {
+            center: new google.maps.LatLng(-33.436936630999635, -70.64826747099966),
+            streetViewControl: false,
+            mapTypeControl: false,
+            overviewMapControl: false,
+            panControl: false,
+            zoom: 16,
+            zoomControl: false,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
         },
+        geocoder: new google.maps.Geocoder(),
+        map: null,
+        userMarker: null,
+        currentPosition: null,
+        autocomplete: null,
+        userData: {},
+        lastPanelState: null,
+        lastUrl: "none"
+},
         st = {
             topBarContent: "#app-top-bar",
             appTransition: "#app-transitions",
@@ -40,8 +41,9 @@
             userAddress: "#user-address",
             userDataContent: "#user-data-content",
             closePanel: ".alternative.close-icon",
-            confirmationDetail: "#confirmation-detail",
-            eventCards: "#cards-content .event-card"
+            confirmationDetail: "#confirmation-detail #fields",
+            eventCards: "#cards-content .event-card",
+            submitEvent: "#submit-event"
         },
         dom = {},
         catchDom = function() {
@@ -62,10 +64,44 @@
             dom.addNewEvent = $(st.addNewEvent);
             dom.confirmationDetail = $(st.confirmationDetail);
             dom.eventCards = $(st.eventCards);
+            dom.submitEvent = $(st.submitEvent);
         },
         navigationControl = {
-            addBrowserHistory: function(state) {
-                history.pushState({ state: state }, state, "#" + state);
+            searchUser: function() {
+                $.ajax({
+                    url: "WebService.asmx/SearchUser",
+                    data: JSON.stringify({
+                        address: app.userData.primary_address + ", " + app.userData.secondary_address
+                    }),
+                    dataType: "json",
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    success: function(data) {
+                        app.userData.sec_id = data.d;
+                        localStorage.setItem("rm_user", JSON.stringify(app.userData));
+                    },
+                    error: function(xmlHttpRequest, textStatus) {
+                        alert(textStatus);
+                    }
+                });
+            },
+            submitNewEvent: function() {
+                var submitObject = app.userData;
+                $("#confirmation-detail .required").each(function(index, value) {
+                    var d = $(value).text() || $(value).val();
+                    submitObject[$(value).data("confirm")] = d;
+                });
+
+                alert(JSON.stringify(submitObject));
+            },
+            addBrowserHistory: function (state) {
+                console.info(app.lastUrl);
+
+                if (state !== app.lastUrl) {
+                    app.lastUrl = state;
+                    history.pushState({ state: state }, state, "#" + state);
+                }
+                
             },
             createTransitions: function() {
                 dom.panels = slidr.create(st.appTransition.slice(1), {
@@ -122,9 +158,9 @@
                 });
             },
             addressConfirm: function() {
+                navigationControl.addBrowserHistory("login");
                 dom.panels.slide("login");
                 dom.topBar.slide("login");
-                navigationControl.addBrowserHistory("login");
                 dom.mapPreview.empty();
                 dom.login.css("display", "block");
                 dom.userAddress.show()
@@ -149,10 +185,15 @@
             },
             createUserLayout: function() {
                 if (events.userDataValidation()) {
+                  
+                    localDatabase.saveChanges();
+                    app.currentPosition =
+                        new google.maps.LatLng(app.userData.latitude, app.userData.longitude);
+
+                    mapControl.addUserMarker();
                     app.userMarker.setOptions({
                         draggable: false
                     });
-                    localDatabase.saveChanges();
 
                     navigationControl.configUserLayout();
                     dom.userDataContent.html(
@@ -164,10 +205,11 @@
                 dom.topBarContent.height(105);
                 dom.panels.slide("map-content");
                 dom.topBar.slide("user-map");
-                navigationControl.addBrowserHistory("user-map");
-                navigationControl.cleanPanelStatus(500);
                 dom.editAddress.show();
                 dom.userStatus.show();
+
+                navigationControl.addBrowserHistory("user-map");
+                navigationControl.cleanPanelStatus(500);
 
 
             },
@@ -208,10 +250,16 @@
                 app.lastPanelState = "map";
             },
             confirmSomeEvent: function() {
-                navigationControl.fillUserConfirm();
+                var selectedCard = db.information[$(this).attr("id")];
+                selectedCard["name"] = app.userData.name;
+                selectedCard["last_name"] = app.userData.last_name;
+                selectedCard["email"] = app.userData.email;
+                selectedCard["phone"] = app.userData.phone;
+                selectedCard["sec_id"] = app.userData.sec_id;
 
+                navigationControl.fillUserConfirm();
                 dom.confirmationDetail.html(
-                    Mustache.render(templates.collection.event_confirm.content, db.information[$(this).attr("id")]));
+                    Mustache.render(templates.collection.event_confirm.content, selectedCard));
 
                 app.lastPanelState = "card";
             }
@@ -231,6 +279,7 @@
             foundPosition: function(position) {
                 app.currentPosition =
                     new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+
                 app.userData.latitude = position.coords.latitude;
                 app.userData.longitude = position.coords.longitude;
 
@@ -264,6 +313,8 @@
 
                 google.maps.event.addListener(app.userMarker, "dragend", function(event) {
                     app.currentPosition = new google.maps.LatLng(event.latLng.lat(), event.latLng.lng());
+                    app.userData.latitude = event.latLng.lat();
+                    app.userData.longitude = event.latLng.lng();
                     app.map.panTo(app.currentPosition);
                     mapControl.getAddressFromCoordinates();
                 });
@@ -313,7 +364,7 @@
                 return (localStorage.getItem("rm_user") === null) ? false : true;
             },
             saveChanges: function() {
-                localStorage.setItem("rm_user", JSON.stringify(app.userData));
+                navigationControl.searchUser();
             }
         },
         events = {
@@ -377,6 +428,7 @@
             dom.closePanel.on("click", navigationControl.closeControl);
             dom.addNewEvent.on("click", navigationControl.confirmNewEvent);
             dom.eventCards.on("click", navigationControl.confirmSomeEvent);
+            dom.submitEvent.on("click", navigationControl.submitNewEvent);
         },
         checkLocalDatabase = function() {
             if (localDatabase.checkExist()) {
@@ -388,8 +440,6 @@
                 navigationControl.addressConfirm();
                 navigationControl.fillUserInputs();
                 navigationControl.createUserLayout();
-            } else {
-                navigationControl.addBrowserHistory("login");
             }
         },
         removeSplash = function() {
@@ -397,7 +447,7 @@
                 $("#splash").remove();
             });
 
-            window.addEventListener("popstate", function(e) {
+            window.addEventListener("popstate", function (e) {
                 dom.panels.slide(e.state.state);
                 dom.topBar.slide(e.state.state);
 
