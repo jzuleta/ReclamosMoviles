@@ -4,10 +4,10 @@
             dom.transitionPanel = $("#app-transitions, .transition-component");
             dom.document = $(window);
         },
-        suscribeEvents = function() {
+        suscribeEvents = function () {
             $(window).resize(reziseTransitionPanel);
         },
-        reziseTransitionPanel = function(e) {
+        reziseTransitionPanel = function (e) {
             dom.transitionPanel.height(dom.document.height() - 57);
         },
         initialize = function() {

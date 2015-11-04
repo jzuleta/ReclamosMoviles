@@ -1,30 +1,32 @@
 ﻿var appController = (function() {
     var app = {
-        mapOptions: {
-            center: new google.maps.LatLng(-33.436936630999635, -70.64826747099966),
-            streetViewControl: false,
-            mapTypeControl: false,
-            overviewMapControl: false,
-            panControl: false,
-            zoom: 16,
-            zoomControl: false,
-            mapTypeId: google.maps.MapTypeId.ROADMAP
+            mapOptions: {
+                center: new google.maps.LatLng(-33.436936630999635, -70.64826747099966),
+                streetViewControl: false,
+                mapTypeControl: false,
+                overviewMapControl: false,
+                panControl: false,
+                zoom: 16,
+                zoomControl: false,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            },
+            geocoder: new google.maps.Geocoder(),
+            map: null,
+            userMarker: null,
+            currentPosition: null,
+            autocomplete: null,
+            userData: {},
+            lastPanelState: null,
+            lastUrl: "none"
         },
-        geocoder: new google.maps.Geocoder(),
-        map: null,
-        userMarker: null,
-        currentPosition: null,
-        autocomplete: null,
-        userData: {},
-        lastPanelState: null,
-        lastUrl: "none"
-},
         st = {
+            toast: "#toast-content",
             topBarContent: "#app-top-bar",
             appTransition: "#app-transitions",
             searchAddressMap: "#search-address-map",
             geolocate: "#geolocate",
             topBarIcon: ".top-action",
+            addressSearchStatus: ".search-status",
             searchStatus: "#search-status",
             currentStatus: "#current-status",
             userStatus: "#user-status",
@@ -47,10 +49,12 @@
         },
         dom = {},
         catchDom = function() {
+            dom.toast = $(st.toast);
             dom.loginContent = $(st.loginContent);
             dom.topBarContent = $(st.topBarContent);
             dom.appTransition = $(st.appTransition);
             dom.topBarIcon = $(st.topBarIcon);
+            dom.addressSearchStatus = $(st.addressSearchStatus);
             dom.geolocate = $(st.geolocate);
             dom.searchStatus = $(st.searchStatus);
             dom.currentStatus = $(st.currentStatus);
@@ -67,6 +71,9 @@
             dom.submitEvent = $(st.submitEvent);
         },
         navigationControl = {
+            hideToast: function() {
+                $(this).hide();
+            },
             searchUser: function() {
                 $.ajax({
                     url: "WebService.asmx/SearchUser",
@@ -94,14 +101,9 @@
 
                 alert(JSON.stringify(submitObject));
             },
-            addBrowserHistory: function (state) {
-                console.info(app.lastUrl);
-
-                if (state !== app.lastUrl) {
-                    app.lastUrl = state;
-                    history.pushState({ state: state }, state, "#" + state);
-                }
-                
+            addBrowserHistory: function(state) {
+                console.info(state);
+                history.pushState({ state: state }, state, "");
             },
             createTransitions: function() {
                 dom.panels = slidr.create(st.appTransition.slice(1), {
@@ -119,15 +121,18 @@
                     transition: "none"
                 }).start();
             },
+            addressSearchStatus: function() {
+                dom.topBar.slide($(this).data("direction"));
+            },
             backTo: function() {
                 var direction = $(this).data("direction");
                 dom.panels.slide(direction);
                 dom.topBar.slide(direction);
-                navigationControl.addBrowserHistory(direction);
             },
             showUserStatus: function() {
                 dom.panels.slide("events-content");
                 dom.topBar.slide("events-content");
+
                 navigationControl.addBrowserHistory("events-content");
                 navigationControl.removeUserLayout();
                 app.lastPanelState = "map";
@@ -158,15 +163,16 @@
                 });
             },
             addressConfirm: function() {
-                navigationControl.addBrowserHistory("login");
                 dom.panels.slide("login");
                 dom.topBar.slide("login");
+                navigationControl.cleanPanelStatus(500);
+                navigationControl.createUserMap();
+            },
+            createUserMap: function() {
                 dom.mapPreview.empty();
                 dom.login.css("display", "block");
                 dom.userAddress.show()
                     .html(Mustache.render(templates.collection.user_address.content, app.userData));
-
-                navigationControl.cleanPanelStatus(500);
                 var mapPreview = new google.maps.Map(document.getElementById(st.mapPreview.slice(1)), {
                         center: app.currentPosition,
                         draggable: false,
@@ -182,10 +188,11 @@
                         position: app.currentPosition,
                         map: mapPreview
                     });
+
             },
             createUserLayout: function() {
                 if (events.userDataValidation()) {
-                  
+
                     localDatabase.saveChanges();
                     app.currentPosition =
                         new google.maps.LatLng(app.userData.latitude, app.userData.longitude);
@@ -199,6 +206,8 @@
                     dom.userDataContent.html(
                         Mustache.render(templates.collection.user_data_content.content,
                             app.userData));
+
+                    navigationControl.addBrowserHistory("user-map");
                 }
             },
             configUserLayout: function() {
@@ -208,10 +217,7 @@
                 dom.editAddress.show();
                 dom.userStatus.show();
 
-                navigationControl.addBrowserHistory("user-map");
                 navigationControl.cleanPanelStatus(500);
-
-
             },
             closeControl: function() {
                 if (app.lastPanelState === "map") {
@@ -219,7 +225,6 @@
                 } else {
                     dom.panels.slide("events-content");
                     dom.topBar.slide("events-content");
-                    navigationControl.addBrowserHistory("events-content");
                     app.lastPanelState = "map";
                 }
             },
@@ -429,6 +434,7 @@
             dom.addNewEvent.on("click", navigationControl.confirmNewEvent);
             dom.eventCards.on("click", navigationControl.confirmSomeEvent);
             dom.submitEvent.on("click", navigationControl.submitNewEvent);
+            dom.toast.on("click", navigationControl.hideToast);
         },
         checkLocalDatabase = function() {
             if (localDatabase.checkExist()) {
@@ -437,7 +443,7 @@
                     new google.maps.LatLng(app.userData.latitude, app.userData.longitude);
 
                 mapControl.addUserMarker();
-                navigationControl.addressConfirm();
+                navigationControl.createUserMap();
                 navigationControl.fillUserInputs();
                 navigationControl.createUserLayout();
             }
@@ -447,14 +453,19 @@
                 $("#splash").remove();
             });
 
-            window.addEventListener("popstate", function (e) {
-                dom.panels.slide(e.state.state);
-                dom.topBar.slide(e.state.state);
+            window.addEventListener("popstate", function(e) {
 
-                if (e.state.state === "user-map")
-                    navigationControl.configUserLayout();
-                else
-                    navigationControl.removeUserLayout();
+                if (e.state !== null) {
+                    console.info(history.length);
+                    window.history.go((history.length - 3) * -1);
+                    console.info(history.length);
+
+                } else {
+                    console.info("Fin del historial");
+                    //navigationControl.addBrowserHistory(app.lastUrl);
+                }
+
+                dom.toast.show();
             });
         };
 
