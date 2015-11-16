@@ -1,4 +1,4 @@
-﻿var appController = (function() {
+﻿(function() {
     var app = {
             mapOptions: {
                 center: new google.maps.LatLng(-33.436936630999635, -70.64826747099966),
@@ -99,7 +99,8 @@
                     submitObject[$(value).data("confirm")] = d;
                 });
 
-                alert(JSON.stringify(submitObject));
+                //alert(JSON.stringify(submitObject));
+                console.log(JSON.stringify(submitObject));
             },
             addBrowserHistory: function(state) {
                 console.info(state);
@@ -192,10 +193,9 @@
             },
             createUserLayout: function() {
                 if (events.userDataValidation()) {
-
                     localDatabase.saveChanges();
                     app.currentPosition =
-                        new google.maps.LatLng(app.userData.latitude, app.userData.longitude);
+                        new google.maps.LatLng(app.userData.coordenada_x, app.userData.coordenada_y);
 
                     mapControl.addUserMarker();
                     app.userMarker.setOptions({
@@ -234,7 +234,7 @@
                 dom.userStatus.hide();
             },
             fillUserInputs: function() {
-                $.each($(st.loginInputs + "[type=text]"), function(index, value) {
+                $.each($(st.loginInputs + ":not([type=hidden]"), function (index, value) {
                     $(value).val(app.userData[$(value).data("parameter")]);
                 });
             },
@@ -256,10 +256,10 @@
             },
             confirmSomeEvent: function() {
                 var selectedCard = db.information[$(this).attr("id")];
-                selectedCard["name"] = app.userData.name;
-                selectedCard["last_name"] = app.userData.last_name;
+                selectedCard["nombre_cliente"] = app.userData.nombre_cliente;
+                selectedCard["apellido_paterno"] = app.userData.apellido_paterno;
                 selectedCard["email"] = app.userData.email;
-                selectedCard["phone"] = app.userData.phone;
+                selectedCard["telefono"] = app.userData.telefono;
                 selectedCard["sec_id"] = app.userData.sec_id;
 
                 navigationControl.fillUserConfirm();
@@ -285,8 +285,8 @@
                 app.currentPosition =
                     new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 
-                app.userData.latitude = position.coords.latitude;
-                app.userData.longitude = position.coords.longitude;
+                app.userData.coordenada_x = position.coords.latitude;
+                app.userData.coordenada_y = position.coords.longitude;
 
                 mapControl.addUserMarker();
                 mapControl.getAddressFromCoordinates();
@@ -318,8 +318,8 @@
 
                 google.maps.event.addListener(app.userMarker, "dragend", function(event) {
                     app.currentPosition = new google.maps.LatLng(event.latLng.lat(), event.latLng.lng());
-                    app.userData.latitude = event.latLng.lat();
-                    app.userData.longitude = event.latLng.lng();
+                    app.userData.coordenada_x = event.latLng.lat();
+                    app.userData.coordenada_y = event.latLng.lng();
                     app.map.panTo(app.currentPosition);
                     mapControl.getAddressFromCoordinates();
                 });
@@ -383,19 +383,79 @@
                 dom.topBar.slide("map-content");
                 navigationControl.addBrowserHistory("map-content");
             },
-            userDataValidation: function() {
+            userDataValidation: function () {
                 var isValid = true;
-                $.each($(st.loginInputs), function(index, value) {
-                    if ($.trim(value.value).length === 0) {
-                        isValid = false;
+                $.each($(st.loginInputs), function (index, value) {
+                    var element = $(value),
+                        parameter = element.data("parameter"),
+                        checkElement;
+
+                    switch (parameter) {
+                        case "rut_cliente":
+                            checkElement =  events.validateRUT($.trim(value.value));
+                            break;
+                        case "email":
+                            checkElement = events.validateEmail($.trim(value.value));
+                            break;
+                        default:
+                            checkElement = $.trim(value.value).length !== 0;
+                    }
+
+                    if (!checkElement) {
                         $(value).addClass("input-error");
+                        isValid = false;
                     } else {
-                        app.userData[$(value).data("parameter")] = value.value;
+                        app.userData[parameter] = value.value;
                         $(value).removeClass("input-error");
                     }
                 });
 
                 return isValid;
+            },
+            validateRUT: function(rut) {
+                if (rut.toString().trim() !== "" && rut.toString().indexOf("-") > 0) {
+                    var caracteres = new Array();
+                    var serie = new Array(2, 3, 4, 5, 6, 7);
+                    var dig = rut.toString().substr(rut.toString().length - 1, 1);
+                    rut = rut.toString().substr(0, rut.toString().length - 2);
+
+                    for (var i = 0; i < rut.length; i++) {
+                        caracteres[i] = parseInt(rut.charAt((rut.length - (i + 1))));
+                    }
+
+                    var sumatoria = 0;
+                    var k = 0;
+                    var resto = 0;
+
+                    for (var j = 0; j < caracteres.length; j++) {
+                        if (k === 6) {
+                            k = 0;
+                        }
+                        sumatoria += parseInt(caracteres[j]) * parseInt(serie[k]);
+                        k++;
+                    }
+
+                    resto = sumatoria % 11;
+                    var dv = 11 - resto;
+
+                    if (dv === 10) {
+                        dv = "K";
+                    } else if (dv === 11) {
+                        dv = 0;
+                    }
+
+                    if (dv.toString().trim().toUpperCase() === dig.toString().trim().toUpperCase())
+                        return true;
+                    else
+                        return false;
+                } else {
+                    return false;
+                }
+
+            },
+            validateEmail: function(email) {
+                var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+                return re.test(email);
             },
             initializeMaps: function() {
                 app.map = new google.maps.Map(document.getElementById(st.searchAddressMap.slice(1)), app.mapOptions);
@@ -440,7 +500,7 @@
             if (localDatabase.checkExist()) {
                 app.userData = jQuery.parseJSON(localStorage.getItem("rm_user"));
                 app.currentPosition =
-                    new google.maps.LatLng(app.userData.latitude, app.userData.longitude);
+                    new google.maps.LatLng(app.userData.coordenada_x, app.userData.coordenada_y);
 
                 mapControl.addUserMarker();
                 navigationControl.createUserMap();
@@ -462,7 +522,6 @@
 
                 } else {
                     console.info("Fin del historial");
-                    //navigationControl.addBrowserHistory(app.lastUrl);
                 }
 
                 dom.toast.show();
