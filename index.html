@@ -16,8 +16,12 @@
 <body>
 <div id="splash">
     <div class="small-12 columns small-text-center" style="">
-        <div style="font-size: 18px; font-weight: 500; color: rgb(95, 95, 95); margin-top: 25px;">Cargando...</div>
+        <div style="color: rgb(95, 95, 95); font-size: 18px; font-weight: 500; margin-top: 25px;">Cargando...</div>
     </div>
+</div>
+
+<div id="toast-content">
+    <div class="toast">Alerta por presionar atras</div>
 </div>
 <div id="top-bar-content">
     <div id="edit-address" class="float-button edit-icon top-bar-icon top-action" data-direction="login"></div>
@@ -28,10 +32,10 @@
         <div data-slidr="map-content" class="top-bar-state">
             <span class="top-bar-icon back-icon top-action" data-direction="login"></span>
             <h3>Buscar ubicación</h3>
-            <span class="top-bar-icon alternative search-icon top-action" data-direction="searcher"></span>
+            <span class="top-bar-icon alternative search-icon search-status top-action" data-direction="searcher"></span>
         </div>
         <div data-slidr="searcher" class="top-bar-state">
-            <span class="top-bar-icon back-gray-icon top-action" data-direction="map-content"></span>
+            <span class="top-bar-icon back-gray-icon search-status top-action" data-direction="map-content"></span>
             <input type="text" id="search-input"/>
         </div>
         <div data-slidr="events-content" class="top-bar-state">
@@ -41,8 +45,8 @@
         <div data-slidr="user-map" class="top-bar-state">
             <div id="user-data-content">
                 <h3></h3>
-                <div style="font-size: 16px; color: white; margin-top: -6px; margin-bottom: 5px;"></div>
-                <div style="font-size: 14px; background: rgb(25, 118, 210) none repeat scroll 0% 0%; color: white; font-weight: 500; float: left; padding: 2px 16px; border-radius: 2px;">CHILECTRA </div>
+                <div style="color: white; font-size: 16px; margin-bottom: 5px; margin-top: -6px;"></div>
+                <div style="background: rgb(25, 118, 210) none repeat scroll 0% 0%; border-radius: 2px; color: white; float: left; font-size: 14px; font-weight: 500; padding: 2px 16px;">CHILECTRA </div>
             </div>
         </div>
         <div data-slidr="event-confirm" class="top-bar-state">
@@ -61,25 +65,47 @@
                 <div class="title-text" style="color: white"></div>
                 <div class="subtitle-text" style="color: white;"></div>
             </div>
-            <div class="group large-12 small-12 columns" style="margin-top: 40px;">
-                <input type="text" data-parameter="name" required>
-                <span class="highlight"></span>
-                <span class="bar"></span>
-                <label>Nombre</label>
-            </div>
-            <div class="group large-6 small-4 columns" style="padding-right: 0">
-                <input type="text" data-parameter="id" required>
+            <!--Inicio Formulario Ingreso-->
+
+            <div class="group large-12 small-6 columns" style="margin-top: 40px;">
+                <input type="text" data-parameter="rut_cliente" required>
                 <span class="highlight"></span>
                 <span class="bar"></span>
                 <label>Rut</label>
             </div>
-            <div class="group large-6 small-8 columns">
-                <input type="text" data-parameter="email" required>
+            <div class="group large-12 small-6 columns" style="margin-top: 40px;">
+                <input type="text" data-parameter="nombre_cliente" required>
                 <span class="highlight"></span>
                 <span class="bar"></span>
-                <label>Correo</label>
+                <label>Nombre</label>
             </div>
-            <div class="large-12 small-6 columns small-offset-3">
+            <div class="group large-12 small-6 columns">
+                <input type="text" data-parameter="apellido_paterno" required>
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                <label>Apellido Paterno</label>
+            </div>
+            <div class="group large-12 small-6 columns">
+                <input type="text" data-parameter="apellido_materno" required>
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                <label>Apellido Materno</label>
+            </div>
+            <div class="group large-12 small-6 columns">
+                <input type="number" data-parameter="telefono" required>
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                <label>Teléfono de contacto</label>
+            </div>
+            <div class="group large-12 small-6 columns">
+                <input type="email" data-parameter="email" required>
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                <label>Correo Electrónico</label>
+            </div>
+
+            <!--Fin Formulario Ingreso-->
+            <div class="large-12 small-12 columns">
                 <a id="login" class="button action-buttons">INGRESAR</a>
             </div>
         </div>
@@ -157,21 +183,23 @@
         </div>
         <div id="event-confirm" data-slidr="event-confirm" class="transition-component">
             <div id="confirmation-detail" class="event-content">
+                <div id="fields" style="padding-left: 56px;">
 
-            </div>
-            <div class="group large-12 small-12 columns">
-                <textarea type="text" data-parameter="detail" rows="8" required></textarea>
-                <span class="highlight"></span>
-                <span class="bar"></span>
-                <label>Observaciones</label>
+                </div>
+                <div class="group large-12 small-12 columns">
+                    <textarea class="required" type="text" data-confirm="reclamo" rows="8" required></textarea>
+                    <span class="highlight"></span>
+                    <span class="bar"></span>
+                    <label>Observaciones</label>
+                </div>
             </div>
             <div class="large-12 small-12 columns">
-                <a class="button action-buttons">INGRESAR EVENTO</a>
+                <a id="submit-event" class="button action-buttons">INGRESAR EVENTO</a>
             </div>
         </div>
     </div>
 </div>
-<script type="text/javascript" src="http://maps.google.com/maps/api/js?libraries=places&sensor=false"></script>
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?key=AIzaSyC69OPp_uIHy9ATAiuVqGY8C_4kT73fMTg&libraries=places&v=3"></script>
 <script type="text/javascript" src="vendors/foundation-5.5.2/js/vendor/modernizr.js"></script>
 <script type="text/javascript" src="vendors/foundation-5.5.2/js/vendor/jquery.js"></script>
 <script type="text/javascript" src="vendors/foundation-5.5.2/js/foundation.min.js"></script>
